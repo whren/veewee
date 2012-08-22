@@ -24,6 +24,8 @@ module Veewee
     attr_accessor :sudo_cmd
     attr_accessor :shutdown_cmd
 
+    attr_accessor :ssh_public_key_to_upload
+
     attr_accessor :pre_postinstall_file
 
     attr_accessor :postinstall_files, :postinstall_timeout
@@ -83,6 +85,9 @@ module Veewee
       #        :ssh_host_port => "2222", :ssh_guest_port => "22", :sudo_cmd => "echo '%p'|sudo -S sh '%f'",
       #       :shutdown_cmd => "shutdown -h now",
       #        :kickstart_file => nil,
+
+      # Default do not upload any public key
+      @ssh_public_key_to_upload = nil
 
       @virtualbox={:vm_options => {}}
       @vmfusion={:vm_options => {}}

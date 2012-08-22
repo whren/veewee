@@ -76,6 +76,8 @@ module Veewee
 
           self.transfer_buildinfo(options)
 
+          self.handle_ssh_public_key_to_upload(options)
+
           # Filtering post install files based upon --postinstall-include and --postinstall--exclude
           definition.postinstall_files=filter_postinstall_files(options)
 
@@ -258,6 +260,23 @@ module Veewee
           end
         end
 
+        # This function handles the public ssh key to be uploaded
+        # It requires a box(to login to) and a definition(listing the ssh public key file)
+        def handle_ssh_public_key_to_upload(options)
+
+          # Prepare the ssh public key file if needed (not nil, or not empty)
+          unless definition.ssh_public_key_to_upload.to_s.empty?
+            ssh_public_key_filename=File.join(definition.path, definition.ssh_public_key_to_upload)
+            # Create .ssh directory in home
+            self.exec("mkdir -pm 700 ~/.ssh")
+            # Upload the key
+            self.scp(ssh_public_key_filename,File.basename(ssh_public_key_filename))
+            self.exec("mv #{File.basename(ssh_public_key_filename)} ~/.ssh/authorized_keys")
+            # Adjust permission
+            self.exec("chmod 0600 ~/.ssh/authorized_keys")
+            env.logger.info "SSH public key #{ssh_public_key_filename} uploaded"
+          end
+        end
 
       end #Module
     end #Module
